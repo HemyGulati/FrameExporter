@@ -84,8 +84,10 @@ REM ── Step 5: Compile installer with Inno Setup ─────────
 echo  [6/6] Looking for Inno Setup...
 
 SET ISCC=
-IF EXIST "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" SET ISCC=C:\Program Files (x86)\Inno Setup 6\ISCC.exe
-IF EXIST "C:\Program Files\Inno Setup 6\ISCC.exe"       SET ISCC=C:\Program Files\Inno Setup 6\ISCC.exe
+IF EXIST "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"            SET "ISCC=C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+IF EXIST "C:\Program Files\Inno Setup 6\ISCC.exe"                  SET "ISCC=C:\Program Files\Inno Setup 6\ISCC.exe"
+IF EXIST "%LOCALAPPDATA%\Programs\Inno Setup 6\ISCC.exe"           SET "ISCC=%LOCALAPPDATA%\Programs\Inno Setup 6\ISCC.exe"
+IF EXIST "%USERPROFILE%\AppData\Local\Programs\Inno Setup 6\ISCC.exe" SET "ISCC=%USERPROFILE%\AppData\Local\Programs\Inno Setup 6\ISCC.exe"
 
 IF DEFINED ISCC (
     echo         Found - compiling installer...
