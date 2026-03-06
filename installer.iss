@@ -26,16 +26,26 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
+
+; Install location
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
+
+; Allow user to choose between admin (all users) and per-user install
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
+
+; Uninstall entry — shows correctly in Windows Settings → Apps & Features
+; and legacy Control Panel → Programs and Features
+UninstallDisplayName={#MyAppName} {#MyAppVersion}
+UninstallDisplayIcon={app}\assets\icon.ico
+CreateUninstallRegKey=yes
+
 AllowNoIcons=yes
 LicenseFile=LICENSE.txt
 OutputDir=installer_output
 OutputBaseFilename=FrameExporter_Setup
 SetupIconFile=assets\icon.ico
-UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
@@ -55,23 +65,27 @@ Source: "LICENSE.txt";                        DestDir: "{app}";        Flags: ig
 Source: "assets\tesseract-ocr-w64-setup.exe"; DestDir: "{tmp}";        Flags: ignoreversion deleteafterinstall
 
 [Icons]
-Name: "{group}\{#MyAppName}";                        Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\assets\icon.ico"
-Name: "{group}\{cm:UninstallProgram,{#MyAppName}}";  Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#MyAppName}";                  Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\assets\icon.ico"; Tasks: desktopicon
+; Start Menu shortcut
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\assets\icon.ico"
+; Desktop shortcut (optional, off by default)
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\assets\icon.ico"; Tasks: desktopicon
 
 [Run]
-; ShouldInstallTesseract is a single function that combines both checks.
-; Check: only accepts one function name — boolean expressions are not allowed.
+; Silently install Tesseract OCR — only if not already present on this machine
 Filename: "{tmp}\tesseract-ocr-w64-setup.exe"; Parameters: "/S"; StatusMsg: "Installing OCR engine — please wait..."; Flags: waituntilterminated runhidden; Check: ShouldInstallTesseract
 
+; Offer to launch the app immediately after installation
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
+; Remove everything left in the install folder on uninstall
 Type: filesandordirs; Name: "{app}"
 
 [Code]
 
-// Returns True when Tesseract is NOT already on this machine.
+// ── TesseractMissing ─────────────────────────────────────────────────────────
+// Returns True when Tesseract is NOT already installed on this machine.
+// Checks both 64-bit and 32-bit (WOW) registry hives.
 function TesseractMissing: Boolean;
 begin
   Result :=
@@ -80,19 +94,23 @@ begin
     not RegKeyExists(HKEY_CURRENT_USER,  'SOFTWARE\Tesseract-OCR');
 end;
 
-// Returns True when the bundled Tesseract installer file is present.
+// ── TesseractInstallerPresent ─────────────────────────────────────────────────
+// Returns True when the bundled Tesseract setup file has been extracted to {tmp}.
 function TesseractInstallerPresent: Boolean;
 begin
   Result := FileExists(ExpandConstant('{tmp}\tesseract-ocr-w64-setup.exe'));
 end;
 
-// Single wrapper used as Check: in [Run] — Inno Setup only accepts one function name.
+// ── ShouldInstallTesseract ────────────────────────────────────────────────────
+// Single wrapper function used as Check: in [Run].
+// Inno Setup Check: only accepts one function name — no inline boolean expressions.
 function ShouldInstallTesseract: Boolean;
 begin
   Result := TesseractMissing and TesseractInstallerPresent;
 end;
 
-// Adds a path to the current user's PATH env var if not already present.
+// ── AddToUserPath ─────────────────────────────────────────────────────────────
+// Appends a directory to the current user PATH if not already present.
 procedure AddToUserPath(NewDir: String);
 var
   OldPath: String;
@@ -102,18 +120,20 @@ begin
     OldPath := '';
   if Pos(LowerCase(NewDir), LowerCase(OldPath)) = 0 then
   begin
-    if (OldPath = '') then
+    if OldPath = '' then
       NewPath := NewDir
     else if OldPath[Length(OldPath)] = ';' then
       NewPath := OldPath + NewDir
     else
       NewPath := OldPath + ';' + NewDir;
     RegWriteStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', NewPath);
-    Log('Added to PATH: ' + NewDir);
+    Log('Added to user PATH: ' + NewDir);
   end;
 end;
 
-// After install: add Tesseract to PATH so pytesseract can find it.
+// ── CurStepChanged ────────────────────────────────────────────────────────────
+// After all files are installed, add Tesseract to the user PATH so that
+// pytesseract can locate tesseract.exe without any manual configuration.
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssPostInstall then
@@ -123,7 +143,8 @@ begin
   end;
 end;
 
-// Customise the welcome screen text.
+// ── InitializeWizard ──────────────────────────────────────────────────────────
+// Customise the welcome screen shown to the user before installation begins.
 procedure InitializeWizard();
 begin
   WizardForm.WelcomeLabel2.Caption :=
