@@ -231,3 +231,17 @@ Select your Python interpreter (`Ctrl+Shift+P` → **Python: Select Interpreter*
 
 MIT — see LICENSE.txt  
 Copyright © 2026 Hemy Gulati
+---
+
+## Third-Party Acknowledgements
+
+| Component | Licence | Notes |
+|-----------|---------|-------|
+| [PyAV](https://github.com/PyAV-Org/PyAV) | BSD 3-Clause | Video decoding via FFmpeg |
+| [Pillow](https://github.com/python-pillow/Pillow) | HPND | Image saving |
+| [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) | Apache 2.0 | OCR engine for number detection |
+| [pytesseract](https://github.com/madmaze/pytesseract) | Apache 2.0 | Python wrapper for Tesseract |
+| [NumPy](https://numpy.org) | BSD 3-Clause | Array operations |
+
+FrameExporter itself is released under the MIT licence — see LICENSE.txt.
+
