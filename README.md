@@ -1,7 +1,7 @@
 # FrameExporter
 
 **Author:** Hemy Gulati  
-**GitHub:** https://github.com/HemyGulati  
+**GitHub:** https://github.com/HemyGulati/FrameExporter  
 **Version:** 1.0.0 — 3 March 2026  
 **Licence:** MIT
 

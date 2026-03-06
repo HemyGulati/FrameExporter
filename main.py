@@ -9,7 +9,7 @@ Optionally detects and records numbers found in each exported frame using
 Tesseract OCR.
 
 Author  : Hemy Gulati
-GitHub  : https://github.com/HemyGulati
+GitHub  : https://github.com/HemyGulati/FrameExporter
 Date    : 3 March 2026
 Version : 1.0.0
 Licence : MIT — see LICENSE.txt
@@ -473,7 +473,7 @@ class AboutDialog(tk.Toplevel):
     APP_VERSION = "1.0.0"
     APP_DATE    = "3 March 2026"
     AUTHOR      = "Hemy Gulati"
-    GITHUB_URL  = "https://github.com/HemyGulati"
+    GITHUB_URL  = "https://github.com/HemyGulati/FrameExporter"
     LICENCE     = "MIT"
 
     def __init__(self, parent: tk.Tk) -> None:
