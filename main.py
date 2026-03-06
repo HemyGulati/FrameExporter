@@ -483,6 +483,14 @@ class AboutDialog(tk.Toplevel):
         self.resizable(False, False)
         self.transient(parent)
         self.grab_set()
+
+        # Inherit the same icon as the main window
+        try:
+            icon_path = Path(__file__).parent / "assets" / "icon.ico"
+            if icon_path.exists():
+                self.iconbitmap(str(icon_path))
+        except Exception:
+            pass
         self._build_content()
         self._centre_on_parent(parent)
         self.bind("<Escape>", lambda e: self.destroy())
@@ -613,6 +621,16 @@ class FrameExporterApp(tk.Tk):
         self.minsize(820, 640)
         self.configure(bg=BG)
         self.resizable(True, True)
+
+        # Set the window icon — replaces the default Python feather in the title bar,
+        # taskbar, and Alt+Tab switcher. Path is relative to the script location so
+        # it works both when running from source and when bundled by PyInstaller.
+        try:
+            icon_path = Path(__file__).parent / "assets" / "icon.ico"
+            if icon_path.exists():
+                self.iconbitmap(str(icon_path))
+        except Exception:
+            pass  # non-fatal — icon is cosmetic only
 
         # ── Application state ─────────────────────────────────────────────────
         self.video_paths: list   = []
