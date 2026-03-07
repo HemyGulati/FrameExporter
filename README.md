@@ -227,12 +227,6 @@ Select your Python interpreter (`Ctrl+Shift+P` → **Python: Select Interpreter*
 
 ---
 
-## Licence
-
-MIT — see LICENSE.txt  
-Copyright © 2026 Hemy Gulati
----
-
 ## Third-Party Acknowledgements
 
 | Component | Licence | Notes |
@@ -245,3 +239,9 @@ Copyright © 2026 Hemy Gulati
 
 FrameExporter itself is released under the MIT licence — see LICENSE.txt.
 
+---
+
+## Licence
+
+MIT — LICENSE  
+Copyright © 2026 Hemy Gulati
